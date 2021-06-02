@@ -1,0 +1,26 @@
+extends layout
+
+block content
+
+  .mdui-toolbar
+    a.mdui-btn.mdui-btn-icon#toolbar-sort
+      i.mdui-icon.material-icons sort
+
+  .mdui-row-xs-3.mdui-row-sm-4.mdui-row-md-5.mdui-row-lg-6.mdui-row-xl-7.mdui-grid-list#imgList
+
+
+  .mdui-dialog#dialog
+    .mdui-card
+      .mdui-card-media#dialog-card-media
+        img#dialog-img
+      .mdui-card-actions
+        button.mdui-btn.mdui-ripple#dialog-setCover-btn 设为背景
+        button.mdui-btn.mdui-ripple#dialog-drop-btn 删除图片
+
+  ul.mdui-menu#toolbar-sort-menu
+    li.mdui-menu-item
+      a.mdui-ripple#sort-positive(onclick='sort(1)') 时间正序
+    li.mdui-menu-item
+      a.mdui-ripple#sort-reverse(onclick='sort(-1)') 时间倒序
+
+  script(src='/javascripts/imageManage.js')

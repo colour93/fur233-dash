@@ -1,0 +1,58 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no')
+    meta(name='renderer', content='webkit')
+    meta(name='force-rendering', content='webkit')
+    title= title
+    link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js')
+  body.mdui-theme-primary-pink.mdui-theme-accent-pink.mdui-theme-layout-auto.mdui-drawer-body-left.mdui-appbar-with-toolbar
+  
+     
+    .mdui-drawer#main-drawer
+      ul.mdui-list
+        
+        li.mdui-subheader 仪表板
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons dashboard
+          a(href='/').mdui-list-item-content 仪表板
+        
+        li.mdui-subheader 图片管理
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons file_upload
+          a(href='/upload').mdui-list-item-content 背景图上传
+
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons image
+          a(href='/manage/image').mdui-list-item-content 图片管理
+ 
+
+        li.mdui-subheader 角色管理
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons person
+          a(href='/manage/fursuiter').mdui-list-item-content Fursuiter管理
+
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons camera_alt
+          a(href='/manage/photographer').mdui-list-item-content 摄影师管理
+
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons format_paint
+          a(href='/manage/maker').mdui-list-item-content 装师管理
+
+        li.mdui-subheader 其他
+        li.mdui-list-item.mdui-ripple
+          i.mdui-list-item-icon.mdui-icon.material-icons settings
+          a(href='/settings').mdui-list-item-content 其他设置
+    
+    .mdui-appbar.mdui-appbar-fixed.mdui-ripple
+      .mdui-toolbar.mdui-color-theme
+        a.mdui-btn.mdui-btn-icon(mdui-drawer="{target: '#main-drawer'}")
+          i.mdui-icon.material-icons menu
+        a.mdui-typo-title= title
+    block content

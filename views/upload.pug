@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .uploadImg
+    label(for='uploadImgInput').mdui-btn.mdui-btn-raised.mdui-ripple 选择图片
+    input(type='file', name='img')#uploadImgInput
+  button.mdui-btn.mdui-btn-raised.mdui-ripple#uploadImgBtn(onclick='upload()') 上传图片
+  #uploadSpinner
+  img.mdui-img-fluid#uploadImgImg
+  
+  script(src='/javascripts/upload.js')

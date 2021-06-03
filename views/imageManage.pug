@@ -11,11 +11,17 @@ block content
 
   .mdui-dialog#dialog
     .mdui-card
-      .mdui-card-media#dialog-card-media
+      .mdui-card-media.mdui-dialog-content#dialog-card-media
         img#dialog-img
       .mdui-card-actions
-        button.mdui-btn.mdui-ripple#dialog-setCover-btn 设为背景
+        button.mdui-btn.mdui-ripple.mdui-dialog-close#dialog-setCover-btn 设为背景
         button.mdui-btn.mdui-ripple#dialog-drop-btn 删除图片
+
+  .mdui-dialog#scDialog
+    .mdui-dialog-actions
+      button.mdui-btn.mdui-ripple.mdui-dialog-confirm#scDialog-setCover-btn 设为背景
+      button.mdui-btn.mdui-ripple.mdui-dialog-cancel#scDialog-cancel-btn(onclick='closeDialog()') 取消
+    
 
   ul.mdui-menu#toolbar-sort-menu
     li.mdui-menu-item

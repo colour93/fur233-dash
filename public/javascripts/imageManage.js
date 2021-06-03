@@ -1,5 +1,8 @@
 //图片管理 GET '/manage/image'
 
+let dialogObj;
+let scDialogObj;
+
 //数据初始化
 window.onload = () => {
   //获取图片列表
@@ -46,14 +49,75 @@ async function getImageList(sort) {
 
 //打开图片对话框
 function showDialog(id) {
+  let dialog = document.getElementById('dialog');
   let dialogImg = document.getElementById('dialog-img');
   let dialogDropBtn = document.getElementById('dialog-drop-btn');
+  let dialogSetCoverBtn = document.getElementById('dialog-setCover-btn');
   url = document.getElementById(id).getAttribute('src');
   dialogImg.setAttribute('src', url);
   dialogDropBtn.setAttribute('onclick', "dropImg('"+id+"')");
-  
-  var dialogObj = new mdui.Dialog('#dialog'); 
+  dialogSetCoverBtn.setAttribute('onclick', "showSetCoverDialog('"+id+"')");
+  dialogObj = new mdui.Dialog('#dialog'); 
   dialogObj.open();
+}
+
+//显示设置封面（背景）对话框
+async function showSetCoverDialog(id) {
+  let scDialog = document.getElementById('scDialog');
+  let scDialogSetCoverBtn = document.getElementById('scDialog-setCover-btn');
+  let scDialogCancelBtn = document.getElementById('scDialog-cancel-btn');
+  scDialogObj = new mdui.Dialog('#scDialog');
+  scDialogSetCoverBtn.setAttribute('onclick', "setCover('" + id + "')");
+  dialogObj.close();
+  scDialogObj.open(); 
+}
+
+//关闭某对话框（我是屑 监听器一个都不管用）
+async function closeDialog() {
+  scDialogObj.close();
+}
+
+//设置背景
+async function setCover(id, type, date) {
+  setCoverReq(id, type, date);
+}
+
+//设置背景的请求
+async function setCoverReq(id ,type, date, confirm) {
+  axios
+    .post('/api/cover/set', {
+        sid: id,
+        type: type,
+        date: date,
+        confirm: confirm
+      })
+    .then((res)=>{
+      data = res.data;
+      if (data.status==0) {
+        mdui.snackbar({
+          message: '设置成功～'
+        });
+        scDialogObj.close();
+      } else if (data.status==-2) {
+        scDialogObj.close();
+        mdui.dialog({
+          content: '该日期已设置背景，是否覆盖？',
+          buttons: [
+            {
+              text: '取消'
+            },
+            {
+              text: '确定',
+              onClick: (scDialogObj)=>{
+                setCoverReq(id, date, type, 1);
+              }
+            }
+          ]
+        });
+      } else {
+        
+      }
+    })
 }
 
 //删除图片

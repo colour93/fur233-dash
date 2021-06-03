@@ -41,6 +41,31 @@ router.get('/manage/image', async(req, res, next) => {
   })
 })
 
+
+//获取指定图片（通过id）
+router.get('/api/image/get', async(req, res, next) => {
+  result = await ctrl.getImageById(req.query.id);
+  res.send(result);
+})
+
+//获取封面图（背景）
+router.get('/api/cover/get', async (req, res, next) => {
+  result = await ctrl.getCover(req.query.date);
+  res.send(result);
+})
+
+//设置封面图（背景）
+router.post('/api/cover/set', async (req, res, next) => {
+  console.log(req.body);
+  let itype
+  let iconfirm
+  const {sid, type, date, confirm} = req.body
+  if (confirm==1) {iconfirm=true};
+  if (type) {itype=parseInt(type)}
+  result = await ctrl.setCover(sid, itype, date, iconfirm);
+  res.send(result);
+})
+
 // 获取总计图片数目（数据库中的）
 router.get('/api/image/count', async (req, res, next) => {
   count = await ctrl.getImageCount();

@@ -44,7 +44,7 @@ const StorageImage = mongoose.model('StorageImage', StorageImageSchema)
 const DailyImageSchema = new Schema ({
 	sid: ObjectId,
 	type: Number,
-	date: Date,
+	date: String,
 	timestamp: Date
 })
 const DailyImage = mongoose.model('DailyImage', DailyImageSchema)
@@ -66,9 +66,21 @@ const Photographer = mongoose.model('Photographer', UserCommonSchema)
 //装师
 const Maker = mongoose.model('Maker', UserCommonSchema)
 
+//格式
+const ObjId = mongoose.Types.ObjectId
+function toObjId(str) {
+	try {
+		oid = ObjId(str)
+		return oid
+	} catch(err) {
+		return 0
+	}
+}
 
 //导出
 module.exports = {
+	ObjId,
+	toObjId,
 	connectDb,
 	StorageImage,
 	DailyImage,

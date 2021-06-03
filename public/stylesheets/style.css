@@ -7,9 +7,4 @@ input {
   clip: rect(0 0 0 0);
 }
 
-#dialog-img {
-    object-fit: scale-down;
-    max-height: 50vh;
-    width: auto;
-}
 

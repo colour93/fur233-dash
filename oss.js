@@ -99,6 +99,7 @@ function randomNum(minNum,maxNum){
 
 module.exports = {
   getTS,
+  randomNum,
   rN,
   put,
   drop

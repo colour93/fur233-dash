@@ -50,21 +50,14 @@ const DailyImageSchema = new Schema ({
 const DailyImage = mongoose.model('DailyImage', DailyImageSchema)
 
 //用户Schema
-const UserCommonSchema = new Schema ({
+const UserSchema = new Schema ({
 	name: String,
+	role: Array,
 	bili_uid: Number,
 	yfid: Number,
 	timestamp: Date
 })
-
-//兽装扮演者
-const Fursuiter = mongoose.model('Fursuiter', UserCommonSchema)
-
-//摄影师
-const Photographer = mongoose.model('Photographer', UserCommonSchema)
-
-//装师
-const Maker = mongoose.model('Maker', UserCommonSchema)
+const User = mongoose.model('User', UserSchema)
 
 //格式
 const ObjId = mongoose.Types.ObjectId
@@ -84,7 +77,5 @@ module.exports = {
 	connectDb,
 	StorageImage,
 	DailyImage,
-	Fursuiter,
-	Photographer,
-	Maker
+	User
 }

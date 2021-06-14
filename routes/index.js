@@ -3,6 +3,7 @@ var fs = require('fs');
 var multer = require('multer');
 var oss = require('../oss');
 var ctrl = require('../controllers');
+const { Router } = require('express');
 var router = express.Router();
 
 const upload = multer({
@@ -28,9 +29,9 @@ const singleMidle = upload.single('singleFile');//一次处理一张
 router.post('/upload',singleMidle ,async(req, res, next) => {
   ctrl.uploadImage(req.file)
     .then( (result) => {
-       res.send(result);
+      res.send(result);
     }).catch( (err) => {
-      res.send(err)
+      res.send(err);
     })
 })
 
@@ -48,6 +49,14 @@ router.get('/api/image/get', async(req, res, next) => {
   res.send(result);
 })
 
+// 获取随机图片
+router.get('/api/image/random', async(req, res, next) => {
+  ctrl.getRandomImage()
+    .then((result)=>{
+      res.send(result);
+    })
+})
+
 //获取封面图（背景）
 router.get('/api/cover/get', async (req, res, next) => {
   result = await ctrl.getCover(req.query.date);
@@ -56,7 +65,6 @@ router.get('/api/cover/get', async (req, res, next) => {
 
 //设置封面图（背景）
 router.post('/api/cover/set', async (req, res, next) => {
-  console.log(req.body);
   let itype
   let iconfirm
   const {sid, type, date, confirm} = req.body
@@ -99,5 +107,23 @@ router.delete('/api/image/delete', async(req ,res ,next ) => {
     })
   }
 });
+
+//创建用户
+router.post('/api/user/add', async(req, res, next) => {
+  const {name, bili_uid, yfid, role} = req.body;
+  ctrl.addUser(name, bili_uid, yfid, role)
+    .then((result)=>{
+      res.send(result);
+    })
+})
+
+// 模糊查询用户
+router.get('/api/user/search', async(req, res, next) => {
+  const {value, type} = req.query;
+  ctrl.searchUser(value, type)
+    .then((result)=>{
+      res.send(result);
+    })
+})
 
 module.exports = router;

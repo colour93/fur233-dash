@@ -3,27 +3,35 @@
 const db = require('./db')
 const oss = require('./oss')
 
+//===================图片管理相关====================
 
 //获取封面图片
 //传参日期 默认今天
 async function getCover(date) {
   return new Promise ((resolve, reject)=>{
     if (!date) {date=oss.getTS().substring(0,8)};
-    if (date.length!=8) {resolve({
-      status: -1,
-      msg: 'date参数错误'
-    })};
+    if (date.length!=8) {
+      resolve({
+        status: -1,
+        msg: 'date参数错误'
+      })
+      return;
+    };
     db.DailyImage.findOne({date:date})
       .then((result)=>{
-        if (!result) {resolve({
-          status: 404,
-          msg: '没有找到对应日期的封面'
-        })};
+        if (!result) {
+          resolve({
+            status: 404,
+            msg: '没有找到对应日期的封面'
+          });
+          return;
+        };
         resolve({
           status: 0,
           msg: 'success',
           data: result
         });
+        return;
       });
   });
 }
@@ -33,16 +41,22 @@ async function getCover(date) {
 async function setCover(sid, type, date, confirm) {
   return new Promise ((resolve, reject)=>{
     oid = db.toObjId(sid);
-    if (oid==0||!sid) {resolve({
-      status: -3,
-      msg: 'sid传参错误'
-    })};
+    if (oid==0||!sid) {
+      resolve({
+        status: -3,
+        msg: 'sid传参错误'
+      });
+      return;
+    };
     if (!type) {type=0}
     if (!date) {date=oss.getTS().substring(0,8)};
-    if (date.length!=8) {resolve({
-      status: -1,
-      msg: 'date参数错误'
-    })};
+    if (date.length!=8) {
+      resolve({
+        status: -1,
+        msg: 'date参数错误'
+      });
+      return;
+    };
     db.DailyImage.findOne({date:date})
       .then((result)=>{
         if (result&&!confirm) {resolve({
@@ -60,7 +74,8 @@ async function setCover(sid, type, date, confirm) {
           status: 0,
           msg: 'success',
           data: result
-        })
+        });
+        return;
       })
   })
 }
@@ -83,9 +98,23 @@ async function getImageById(id) {
           status: 0,
           msg: 'success',
           data: result
-        })
+        });
+        return;
       })
   })
+}
+
+//获取随机图片
+async function getRandomImage(uid) {
+  return new Promise (async(resolve, reject)=>{
+    result = await db.StorageImage.aggregate( [ { $sample: { size: 1 } } ] )
+    resolve({
+      status: 0,
+      msg: 'success',
+      data: result[0]
+    });
+    return;
+  });
 }
 
 //上传到oss的图片
@@ -101,6 +130,7 @@ async function uploadImage (file, include, description, photographer, maker) {
           status: -1,
           msg: '图片格式不正确'
         });
+        return;
     };
     //生成文件名
     fn = oss.getTS() + oss.rN() + suffix;
@@ -177,12 +207,150 @@ async function deleteImage(id) {
   })
 }
 
+//===================用户管理相关====================
+
+//创建用户
+async function addUser (name, bili_uid_str, yfid_str, role) {
+  return new Promise (async(resolve, rejecet)=>{
+    // 判断参数
+    if (!name||!bili_uid_str||!role) {
+      resolve({
+        status: -4,
+        msg: '参数不全'
+      });
+      return;
+    };
+
+    // 判断角色填写是否正确
+    // 常规格式
+    roleExample = [
+      'fursuiter',
+      'photographer',
+      'maker'
+    ];
+    // 判断是否在其中
+    if (!roleExample.includes(role)) {
+      resolve({
+        status: -4,
+        msg: '角色填写错误'
+      });
+      return;
+    };
+
+    // 转格式
+    bili_uid = parseInt(bili_uid_str);
+    if (bili_uid==NaN) {
+      resolve({
+        status: -4,
+        msg: 'uid格式错误或未填写'
+      });
+      return;
+    }
+    // 分流
+    result = await db.User.findOne({bili_uid: bili_uid});
+    // 若存在
+    if (result) {
+      roleArr = result.role;
+      // 如果角色也相同，就返回
+      if (roleArr.includes(role)) {
+        resolve({
+          status: -3,
+          msg: '用户已存在',
+          data: result
+        });
+        return;
+      }
+      // 如果角色不同，就添加角色
+      result = await db.User.updateOne(
+        { bili_uid: bili_uid },
+        { $push: { role: role } }
+      );
+      resolve({
+        status: 1,
+        msg: '添加角色成功',
+        data: result
+      });
+      return;
+    };
+    // 若不存在
+    result = await db.User.create({
+      name: name,
+      role: [role],
+      bili_uid: bili_uid,
+      // yfid: yfid,
+      timestamp: new Date()
+    });
+    resolve({
+      status: 0,
+      msg: 'success',
+      data: result
+    });
+    return;
+  })
+}
+
+// 模糊查询用户
+async function searchUser (value, type) {
+  return new Promise (async(resolve, reject)=>{
+    // 判断入参
+    if (!value) {
+      resolve({
+        status: -4,
+        msg: '参数不完整'
+      });
+      return;
+    };
+    // 如果没有输入type，默认为name
+    if (!type) {type = 'name'};
+    // 判断
+    switch (type) {
+      // uid查询
+      case 'uid':
+        // 转格式
+        uid = parseInt(value);
+        // 判断格式
+        if (uid==NaN) {
+          resolve({
+            status: -4,
+            msg: 'uid格式错误或未输入'
+          });
+          return;
+        };
+        result = await db.User.findOne({bili_uid: uid});
+        resolve({
+          status: 0,
+          msg: 'success',
+          data: result
+        })
+        break;
+      // name查询
+      case 'name':
+        // 模糊查询
+        reg = new RegExp(value, 'i')
+        result = await db.User.find({name: { $regex: reg } })
+        resolve({
+          status: 0,
+          msg: 'success',
+          data: result
+        });
+        return;
+        break;
+      default:
+        
+        break;
+    };
+  });
+}
+
 module.exports = {
   getImageById,
+  getRandomImage,
   getCover,
   setCover,
   uploadImage,
   deleteImage,
   getImageCount,
-  getImageList
+  getImageList,
+  addUser,
+  searchUser
 }

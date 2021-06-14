@@ -4,17 +4,26 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
+var cors=require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var mongo = require('./db')
+var mongo = require('./db');
+
 
 var app = express();
 
 // 解析请求体
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
+// 允许CORS
+app.use(cors({
+    // origin:['http://localhost'],  //指定接收的地址
+    methods:['GET','POST'],  //指定接收的请求类型
+    // alloweHeaders:['Content-Type','text/plain']  //指定header
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

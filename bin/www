@@ -8,6 +8,9 @@ var app = require('../app');
 var debug = require('debug')('fur233dash:server');
 var http = require('http');
 
+// 引入YF-CLOG
+var clog = require('yooofur-clog');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -20,6 +23,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+clog.info(`HTTP服务运行于 ${port}`);
 
 /**
  * Listen on provided port, on all network interfaces.

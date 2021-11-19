@@ -6,18 +6,33 @@ var ctrl = require('../controllers');
 const { Router } = require('express');
 var router = express.Router();
 
+const $ = require('../fn');
+const cfg = require('../config');
+
 const upload = multer({
   dest: 'tmp'//上传文件存放路径
 });
 
+// 鉴权中间件
+const auth = (req, res, next) => {
+  if (req.cookies.key != cfg.key && req.query.key != cfg.key) {
+    $.unauthorized(res);
+    return;
+  };
+  next();
+}
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', auth, function(req, res, next) {
+  res.cookie('key', cfg.key ,{
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  })
   res.render('index', {
     title: '仪表板 - 有福瑞'
   });
 });
 
-router.get('/upload', async(req, res, next) => {
+router.get('/upload', auth, async(req, res, next) => {
   res.render('upload', {
     title: '上传背景图 - 有福瑞'
   })
@@ -26,7 +41,7 @@ router.get('/upload', async(req, res, next) => {
 const singleMidle = upload.single('singleFile');//一次处理一张
 
 // post '/upload'
-router.post('/upload',singleMidle ,async(req, res, next) => {
+router.post('/upload', auth, singleMidle, async(req, res, next) => {
   ctrl.uploadImage(req.file)
     .then( (result) => {
       res.send(result);
@@ -36,7 +51,7 @@ router.post('/upload',singleMidle ,async(req, res, next) => {
 })
 
 //图片管理 GET '/mange/image'
-router.get('/manage/image', async(req, res, next) => {
+router.get('/manage/image', auth, async(req, res, next) => {
   res.render('imageManage', {
     title: '图片管理 - 有福瑞'
   })
@@ -64,7 +79,7 @@ router.get('/api/cover/get', async (req, res, next) => {
 })
 
 //设置封面图（背景）
-router.post('/api/cover/set', async (req, res, next) => {
+router.post('/api/cover/set', auth, async (req, res, next) => {
   let itype
   let iconfirm
   const {sid, type, date, confirm} = req.body
@@ -75,7 +90,7 @@ router.post('/api/cover/set', async (req, res, next) => {
 })
 
 // 获取总计图片数目（数据库中的）
-router.get('/api/image/count', async (req, res, next) => {
+router.get('/api/image/count', auth, async (req, res, next) => {
   count = await ctrl.getImageCount();
   res.send({
     status: 0,

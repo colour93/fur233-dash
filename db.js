@@ -1,5 +1,8 @@
 //数据库相关
 
+// YF-CLOG
+var clog = require('yooofur-clog');
+
 var mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
@@ -7,14 +10,15 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 const config = require('./config')
 
 const connectDb = new Promise((resolve,reject)=>{
-    mongoose.connect(config.dbAddress,{useNewUrlParser:true})
+    mongoose.connect(config.dbAddress,{useNewUrlParser:true, useUnifiedTopology: true})
     
     mongoose.connection.once('open',(err)=>{ 
         if(!err){
-            console.log('数据库连接成功')
-            resolve()
+            clog.info(`数据库连接成功`);
+            resolve();
         }else{
-            reject('数据库连接失败'+ err)   
+            clog.error('数据库连接失败'+ err);
+			reject(err);
         }
     })
 })

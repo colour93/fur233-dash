@@ -6,6 +6,9 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var cors=require('cors');
 
+// YF-CLOG
+var clog = require('yooofur-clog');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -19,11 +22,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 // 允许CORS
+let corsMethods = ['GET', 'POST'];
 app.use(cors({
     // origin:['http://localhost'],  //指定接收的地址
-    methods:['GET','POST'],  //指定接收的请求类型
+    methods:corsMethods,  //指定接收的请求类型
     // alloweHeaders:['Content-Type','text/plain']  //指定header
 }))
+clog.info(`允许的CORS类型为 ${corsMethods}`)
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

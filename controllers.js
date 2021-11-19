@@ -17,7 +17,7 @@ async function getCover(date) {
       })
       return;
     };
-    db.DailyImage.findOne({date:date})
+    db.DailyImage.findOne({date}, {_id: 0})
       .then((result)=>{
         if (!result) {
           resolve({

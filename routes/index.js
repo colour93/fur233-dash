@@ -7,6 +7,7 @@ const { Router } = require('express');
 var router = express.Router();
 
 const $ = require('../fn');
+const cfg = require('../config');
 
 const upload = multer({
   dest: 'tmp'//上传文件存放路径
@@ -14,7 +15,7 @@ const upload = multer({
 
 // 鉴权中间件
 const auth = (req, res, next) => {
-  if (req.cookies.key != '520549' && req.query.key != '520549') {
+  if (req.cookies.key != cfg.key && req.query.key != cfg.key) {
     $.unauthorized(res);
     return;
   };
@@ -23,7 +24,7 @@ const auth = (req, res, next) => {
 
 /* GET home page. */
 router.get('/', auth, function(req, res, next) {
-  res.cookie('key', '520549' ,{
+  res.cookie('key', cfg.key ,{
     maxAge: 7 * 24 * 60 * 60 * 1000
   })
   res.render('index', {
